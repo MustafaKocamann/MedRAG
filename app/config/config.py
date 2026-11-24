@@ -1,8 +1,9 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-# .env dosyasını yükler
+
 load_dotenv()
+
 HF_TOKEN = os.environ.get("HF_TOKEN")
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 
