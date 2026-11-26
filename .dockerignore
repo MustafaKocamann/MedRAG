@@ -1,0 +1,28 @@
+# Git & Environment
+.git/
+.gitignore
+.env
+.env.*
+!.env.example
+
+# Python virtual environment & cache
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Local databases & vector stores
+vectorstore/
+*.db
+*.sqlite3
+
+# Logs & temp files
+logs/
+*.log
+notes.md
+
+# Large raw data
+data/*.pdf
