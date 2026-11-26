@@ -18,27 +18,20 @@ pipeline {
             }
         }
 
-        stage('Run Unit Tests in Container') {
-            steps {
-                script {
-                    echo 'Running test suite in Python 3.13 container...'
-                    sh """
-                    docker run --rm \
-                        -e PYTHONPATH=. \
-                        -v "\$(pwd):/app" \
-                        -w /app \
-                        python:3.13-slim \
-                        sh -c "pip install --no-cache-dir . && python -m unittest discover -s tests"
-                    """
-                }
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 script {
                     echo "Building Docker image: ${env.ECR_REPO}:${env.IMAGE_TAG}"
                     sh "docker build -t ${env.ECR_REPO}:${env.IMAGE_TAG} ."
+                }
+            }
+        }
+
+        stage('Run Unit Tests in Container') {
+            steps {
+                script {
+                    echo 'Running test suite in the built Docker image...'
+                    sh "docker run --rm ${env.ECR_REPO}:${env.IMAGE_TAG} python -m unittest discover -s tests"
                 }
             }
         }
