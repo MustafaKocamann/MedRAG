@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
+    <meta name="theme-color" content="#142d33">
+    <title>Medica RAG | Sağlık Asistanı</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='chat.css') }}">
+    <script src="{{ url_for('static', filename='chat.js') }}" defer></script>
+</head>
+<body>
+    <a class="skip-link" href="#prompt">Soru alanına geç</a>
+    <div class="shell">
+        <aside class="sidebar" aria-label="Medica RAG hakkında">
+            <a class="brand" href="{{ url_for('index') }}">
+                <span class="brand-mark" aria-hidden="true"></span>
+                <span>
+                    <strong>Medica RAG</strong>
+                    <small>Yapay zekâ sağlık asistanı</small>
+                </span>
+            </a>
+            <a class="reset" href="{{ url_for('clear') }}">
+                <span aria-hidden="true">+</span> Yeni sohbet
+            </a>
+
+            <section class="scope" aria-labelledby="scope-title">
+                <h2 id="scope-title">Kullanım kapsamı</h2>
+                <ul>
+                    <li>Genel sağlık bilgileri</li>
+                    <li>Tıbbi terimlerin açıklaması</li>
+                    <li>İlgili kaynakların gösterilmesi</li>
+                </ul>
+            </section>
+
+            <details class="safety">
+                <summary>Sağlık ve gizlilik</summary>
+                <p>Yapay zekâ yanıtları eksik veya hatalı olabilir. Sağlık kararlarınız için bir sağlık uzmanına danışın.</p>
+                <p>Sohbet geçmişi açık sayfada tutulur. Yanıt hazırlanırken mesaja ek olarak ilgili kaynak kesitleri de OpenRouter’a iletilebilir.</p>
+                <a href="https://www.who.int/publications/b/70584" target="_blank" rel="noopener noreferrer">DSÖ’nün sağlıkta yapay zekâ rehberi <span aria-hidden="true">↗</span></a>
+            </details>
+        </aside>
+
+        <main class="workspace">
+            <header class="topbar">
+                <p>Sağlık sohbeti</p>
+                <a class="emergency" href="tel:112">
+                    <strong>112</strong><span>Türkiye’de acil yardım</span>
+                </a>
+            </header>
+            <div class="conversation" id="conversation" aria-label="Sohbet">
+                {% if reply %}
+                    {% include "_turn.html" %}
+                {% else %}
+                    <section class="welcome" id="welcome" aria-labelledby="welcome-title">
+                        <div class="welcome-mark" aria-hidden="true"><span class="brand-mark"></span></div>
+                        <h1 id="welcome-title">Sağlık hakkında ne öğrenmek istersiniz?</h1>
+                        <p class="welcome-intro">Sağlık kavramları ve tıbbi terimler hakkında kaynaklara dayalı, anlaşılır bilgi alın.</p>
+
+                        <div class="examples" aria-label="Örnek sorular">
+                            {% for topic, example in [
+                                ("Tıbbi terimler", "Tansiyon ölçümündeki iki sayı neyi ifade eder?"),
+                                ("Solunum sağlığı", "Alerji ile soğuk algınlığı arasındaki fark nedir?"),
+                                ("Bağışıklık", "Bağışıklık sistemi nasıl çalışır?")
+                            ] %}
+                                <form action="{{ url_for('index') }}" method="post">
+                                    <button class="example" type="submit" name="prompt" value="{{ example }}">
+                                        <span class="example-topic">{{ topic }}<span aria-hidden="true">↗</span></span>
+                                        <span class="example-question">{{ example }}</span>
+                                    </button>
+                                </form>
+                            {% endfor %}
+                        </div>
+                    </section>
+                {% endif %}
+            </div>
+
+            <section class="composer" aria-label="Yeni mesaj">
+                <div class="composer-inner">
+                    <p class="composer-alert" id="composer-alert" role="alert" {% if not error %}hidden{% endif %}>{{ error|default("") }}</p>
+                    <form class="prompt-form" id="prompt-form" action="{{ url_for('index') }}" method="post">
+                        <label for="prompt">Sağlık sorunuzu yazın</label>
+                        <div class="prompt-row">
+                            <textarea id="prompt" name="prompt" rows="2" maxlength="{{ max_prompt_length }}"
+                                      placeholder="Örneğin, bağışıklık sistemi nasıl çalışır?"
+                                      aria-describedby="privacy-hint" autocomplete="off" required></textarea>
+                            <button class="send" type="submit">Gönder <span aria-hidden="true">↑</span></button>
+                        </div>
+                        <p class="privacy-hint" id="privacy-hint">Mesajlar OpenRouter’a iletilebilir. Kimlik bilgisi veya sağlık kaydı paylaşmayın.</p>
+                    </form>
+                    <p class="medical-note">Medica RAG tanı koymaz, tedavi planı oluşturmaz ve ilaç önermez.</p>
+                </div>
+            </section>
+            <div class="visually-hidden" id="reply-status" role="status"></div>
+        </main>
+    </div>
+
+    <template id="pending-turn">
+        <section class="turn" aria-label="Sohbet sırası">
+            <div class="user-message">
+                <span class="message-author">Siz</span>
+                <p class="user-text"></p>
+            </div>
+            <div class="assistant-message">
+                <span class="assistant-mark brand-mark" aria-hidden="true"></span>
+                <div class="answer answer-pending">Yanıt hazırlanıyor…</div>
+            </div>
+        </section>
+    </template>
+</body>
+</html>

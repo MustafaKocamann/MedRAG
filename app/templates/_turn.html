@@ -1,0 +1,31 @@
+<section class="turn" aria-label="Sohbet sırası">
+    <div class="user-message">
+        <span class="message-author">Siz</span>
+        <p class="user-text">{{ question }}</p>
+    </div>
+    <article class="assistant-message{% if reply.kind == 'urgent' %} is-urgent{% endif %}" aria-label="Medica RAG yanıtı">
+        <span class="assistant-mark brand-mark" aria-hidden="true"></span>
+        <div class="answer">
+            <span class="message-author">Medica RAG</span>
+            <h2>{{ reply.title }}</h2>
+            <p>{{ reply.summary }}</p>
+            {% if reply.points %}
+                <ul class="answer-points">
+                    {% for point in reply.points %}
+                        <li>{{ point }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            {% if reply.sources %}
+                <details class="sources">
+                    <summary>Başvurulan kaynaklar <span>{{ reply.sources|length }}</span></summary>
+                    <ul>
+                        {% for source in reply.sources %}
+                            <li>{{ source }}</li>
+                        {% endfor %}
+                    </ul>
+                </details>
+            {% endif %}
+        </div>
+    </article>
+</section>

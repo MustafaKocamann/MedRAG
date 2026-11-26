@@ -53,3 +53,7 @@ desktop.ini
 *.sqlite
 *.sqlite3
 *.db
+
+
+# Notes
+/notes.md
